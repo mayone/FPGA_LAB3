@@ -1,5 +1,11 @@
-module circle(center_x, center_y, R, G, B,);
+module circle(center_x, center_y, HSYNC, VSYNC, R, G, B);
 
-        input center;
+        input   center_x, center_y;
+        output  HSYNC, VSYNC;
+        output  R, G, B;
+
+        // variables
+        
+        // design
         
 endmodule
