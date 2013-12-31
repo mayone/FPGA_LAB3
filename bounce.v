@@ -21,9 +21,9 @@
 module bounce(CLK, RESET, center_x, center_y);
 	input CLK;
 	input RESET;
-	output reg center_x, center_y;
+	output reg [10:0] center_x, center_y;
 	
-	reg [19:0] counter;
+	reg [23:0] counter;
 	reg enable;
 	reg [5:0] velocity;
 	reg v_dir; //1 represents upward, 0 represents downward
@@ -31,7 +31,7 @@ module bounce(CLK, RESET, center_x, center_y);
 	always @ (posedge CLK) begin
 		if (RESET) begin
 			counter <= 0;
-		end else if (counter == 692639) begin
+		end else if (counter == 8311679) begin
 			counter <= 0;
 		end else begin
 			counter <= counter + 1;
@@ -53,12 +53,15 @@ module bounce(CLK, RESET, center_x, center_y);
 		end else if (enable == 0) begin
 			v_dir <= v_dir;
 			velocity <= velocity;
-		end else if (center_y == 500) begin
+		end else if (v_dir == 0 && center_y + velocity >= 500) begin
 			v_dir <= !v_dir;
 			velocity <= velocity / 2;
-		end else if (velocity == 0) begin
+		end else if (velocity == 0 && v_dir == 1) begin
 			v_dir <= !v_dir;
 			velocity <= 1;
+		end else if (velocity == 0 && v_dir == 0) begin
+			v_dir <= v_dir;
+			velocity <= velocity;
 		end else begin
 			case (v_dir)
 			1'b0: 
