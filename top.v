@@ -20,11 +20,18 @@
 //////////////////////////////////////////////////////////////////////////////////
 module top(CLK, RESET, HSYNC, VSYNC, R, G, B);
 	 
-input   CLK,vRESET;
-output  HSYNC, VSYNC, R, G, B;
+input 	CLK, RESET;
+output 	HSYNC, VSYNC, R, G, B;
 	
+// variables
 
+wire	[10:0] center_x, center_y;
+wire 	HSYNC, VSYNC, R, G, B;
 
+// design
+
+bounce bouncing(CLK, RESET, center_x, center_y);
+circle O_o(CLK, RESET, center_x, center_y, HSYNC, VSYNC, R, G, B);
 
 
 
