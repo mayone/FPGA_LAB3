@@ -1,36 +1,53 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date:    18:41:09 12/30/2013 
+// Design Name: 
+// Module Name:    circle 
+// Project Name: 
+// Target Devices: 
+// Tool versions: 
+// Description: 
+//
+// Dependencies: 
+//
+// Revision: 
+// Revision 0.01 - File Created
+// Additional Comments: 
+//
+//////////////////////////////////////////////////////////////////////////////////
 module circle(CLK, RESET, center_x, center_y, HSYNC, VSYNC, R, G, B);
 
 	input		CLK, RESET;
-	input 	center_x, center_y;
+	input	[10:0] center_x, center_y;
 	output 	HSYNC, VSYNC;
 	output	R, G, B;
 	
 	// variables
 	
-	wire			HSYNC, VSYNC;
-	wire			R, G, B;
 	reg [2:0]	RGB_buff;
 	wire 			visible;
 	
 	reg [10:0]	pixel_col, pixel_row;
-	reg [10:0]	col, row;
-	reg [10:0]	d2;
-	reg [10:0]	dist;
+	wire[10:0]	col, row;
+	reg [19:0]	d2;
 	reg			row_inc;
 	reg			INSIDE;
 	
 	// design
 	
 	assign HSYNC = ~( (pixel_col >= 919) & (pixel_col < 1039) );
-	assign VSYNC = ~( (pixel_col >= 659) & (pixel_col < 665) );
-	assign visible = ( (pixel_col > 104) & (pixel_col < 904) & (pixel_row > 23) & (pixel_col < 623) );
+	assign VSYNC = ~( (pixel_row >= 659) & (pixel_row < 665) );
+	assign visible = ( (pixel_col > 104) & (pixel_col < 904) & (pixel_row > 23) & (pixel_row < 623) );
 	
 	assign R = ( visible ) ? RGB_buff[2] : 0;
 	assign G = ( visible ) ? RGB_buff[1] : 0;
 	assign B = ( visible ) ? RGB_buff[0] : 0;
 	
-	assign col = pixel_col - center_x;     // dx
-	assign row = pixel_row - center_y;     // dy
+	assign col = ( pixel_col > center_x ) ? pixel_col - center_x : center_x - pixel_col;     // dx
+	assign row = ( pixel_row > center_y ) ? pixel_row - center_y : center_y - pixel_row;     // dy
 	
 	always@( posedge CLK ) begin     // move horizontally
 		if( RESET ) pixel_col <= 0;
@@ -58,11 +75,15 @@ module circle(CLK, RESET, center_x, center_y, HSYNC, VSYNC, R, G, B);
 	end
 	
 	always@( posedge CLK ) begin
-		d2 = col * col + row * row;
+		//d2 <= col * col + row * row;
+		if((col*col + row*row) > 10000) INSIDE <= 0;
+		else INSIDE <= 1;
 	end
-	
+	/*
 	always@( d2 ) begin
-		dist
+		if( d2 < 10000 ) INSIDE <= 1;
+		else INSIDE <= 0;
 	end
+	*/
 
 endmodule
